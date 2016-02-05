@@ -85,6 +85,53 @@ class PresenceAnalyzerUtilsTestCase(unittest.TestCase):
             data[10][sample_date]['start'],
             datetime.time(9, 39, 5)
         )
+    
+    def test_group_by_weekday(self):
+        """
+        Test grouping by weekday.
+        """
+        data = utils.get_data()
+        grouped_by_weekday = utils.group_by_weekday(data)
+        self.assertIsInstance(grouped_by_weekday, list)
+        with self.assertRaises(TypeError):
+            utils.group_by_weekday({'first': 123, 'second': '123'})
+    
+    def test_seconds_since_midnight(self):
+        """
+        Test calculating seconds since midnight.
+        """
+        example_times = [
+                         [datetime.time(17, 30, 15), 63015],  # 17 * 3600 + 30 * 60 + 15 = 63015
+                         [datetime.time(11, 20, 0), 40800]    # 11 * 3600 + 20 * 60 + 0  = 40800
+                         ]
+        
+        for example_time in example_times:
+            self.assertEqual(utils.seconds_since_midnight(example_time[0]),
+                             example_time[1])
+        
+        with self.assertRaises(TypeError):
+            utils.seconds_since_midnight('some string')
+    
+    def test_interval(self):
+        """
+        Test calculating amount of time between two datetime.time objects.
+        """
+        self.assertEqual(utils.interval(
+                                        datetime.time(17, 30, 15),
+                                        datetime.time(11, 20, 0)
+                                        ),
+                         22215)
+        with self.assertRaises(TypeError):
+            utils.interval('not a datetime.time', 'object')
+    
+    def test_mean(self):
+        """
+        Test returning arithmetic mean or zero if empty.
+        """
+        self.assertEqual(utils.mean([1,39,22,2]), 16)
+        self.assertEqual(utils.mean([]), 0)
+        with self.assertRaises(TypeError):
+            utils.mean('not a list')
 
 
 def suite():
