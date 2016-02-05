@@ -6,6 +6,7 @@ import os.path
 import json
 import datetime
 import unittest
+from pprint import pprint
 
 from presence_analyzer import main, views, utils
 
@@ -52,6 +53,31 @@ class PresenceAnalyzerViewsTestCase(unittest.TestCase):
         data = json.loads(resp.data)
         self.assertEqual(len(data), 2)
         self.assertDictEqual(data[0], {u'user_id': 10, u'name': u'User 10'})
+    
+    def test_mean_time_weekday_view(self):
+        """
+        Test mean presence time grouped by weekday for given user.
+        """
+        resp = self.client.get('/api/v1/mean_time_weekday/666')
+        self.assertEqual(resp.status_code, 404)
+        self.assertEqual(resp.content_type, 'text/html')
+        
+        resp = self.client.get('/api/v1/mean_time_weekday/10')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.content_type, 'application/json')
+    
+    def test_presence_weekday_view(self):
+        """
+        Test total presence time for given user grouped by weekday.
+        """
+        resp = self.client.get('/api/v1/presence_weekday/666')
+        self.assertEqual(resp.status_code, 404)
+        self.assertEqual(resp.content_type, 'text/html')
+        
+        resp = self.client.get('/api/v1/presence_weekday/10')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.content_type, 'application/json')
+        
 
 
 class PresenceAnalyzerUtilsTestCase(unittest.TestCase):
@@ -91,7 +117,7 @@ class PresenceAnalyzerUtilsTestCase(unittest.TestCase):
         Test grouping by weekday.
         """
         data = utils.get_data()
-        grouped_by_weekday = utils.group_by_weekday(data)
+        grouped_by_weekday = utils.group_by_weekday(data[10])
         self.assertIsInstance(grouped_by_weekday, list)
         with self.assertRaises(TypeError):
             utils.group_by_weekday({'first': 123, 'second': '123'})
@@ -102,14 +128,14 @@ class PresenceAnalyzerUtilsTestCase(unittest.TestCase):
         """
         example_times = [
                          [datetime.time(17, 30, 15), 63015],  # 17 * 3600 + 30 * 60 + 15 = 63015
-                         [datetime.time(11, 20, 0), 40800]    # 11 * 3600 + 20 * 60 + 0  = 40800
+                         [datetime.time(11, 20, 0), 40800],    # 11 * 3600 + 20 * 60 + 0  = 40800
                          ]
         
         for example_time in example_times:
             self.assertEqual(utils.seconds_since_midnight(example_time[0]),
                              example_time[1])
         
-        with self.assertRaises(TypeError):
+        with self.assertRaises(AttributeError):
             utils.seconds_since_midnight('some string')
     
     def test_interval(self):
@@ -117,11 +143,11 @@ class PresenceAnalyzerUtilsTestCase(unittest.TestCase):
         Test calculating amount of time between two datetime.time objects.
         """
         self.assertEqual(utils.interval(
+                                        datetime.time(11, 20, 0),
                                         datetime.time(17, 30, 15),
-                                        datetime.time(11, 20, 0)
                                         ),
                          22215)
-        with self.assertRaises(TypeError):
+        with self.assertRaises(AttributeError):
             utils.interval('not a datetime.time', 'object')
     
     def test_mean(self):
