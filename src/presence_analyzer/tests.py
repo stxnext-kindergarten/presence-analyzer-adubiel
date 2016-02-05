@@ -6,7 +6,6 @@ import os.path
 import json
 import datetime
 import unittest
-from pprint import pprint
 
 from presence_analyzer import main, views, utils
 
