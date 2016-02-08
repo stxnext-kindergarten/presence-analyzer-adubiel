@@ -8,11 +8,11 @@ from json import dumps
 from functools import wraps
 from datetime import datetime
 
-from flask import Response
+import logging
 
+from flask import Response
 from presence_analyzer.main import app
 
-import logging
 log = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
@@ -80,6 +80,43 @@ def group_by_weekday(items):
         start = items[date]['start']
         end = items[date]['end']
         result[date.weekday()].append(interval(start, end))
+    return result
+
+
+def group_start_end(items):
+    """
+    Groups presence start and end entries by weekday.
+    """
+    result = [
+        [[], []],
+        [[], []],
+        [[], []],
+        [[], []],
+        [[], []],
+        [[], []],
+        [[], []]
+    ]  # one list for every day in week
+    for date in items:
+        start = items[date]['start']
+        end = items[date]['end']
+        result[date.weekday()][0].append(seconds_since_midnight(start))
+        result[date.weekday()][1].append(seconds_since_midnight(end))
+    return result
+
+
+def mean_start_stop(items):
+    """
+    Counts mean start and end time by weekday.
+    """
+    items_grouped = group_start_end(items)
+    result = []
+    for starts, stops in items_grouped:
+        start = mean(starts)
+        stop = mean(stops)
+        result.append({
+            'Start': start,
+            'End': stop
+        })
     return result
 
 

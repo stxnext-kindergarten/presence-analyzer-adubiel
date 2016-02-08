@@ -71,7 +71,6 @@ class PresenceAnalyzerViewsTestCase(unittest.TestCase):
         resp = self.client.get('/api/v1/mean_time_weekday/666')
         self.assertEqual(resp.status_code, 404)
         self.assertEqual(resp.content_type, 'text/html')
-
         resp = self.client.get('/api/v1/mean_time_weekday/10')
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.content_type, 'application/json')
@@ -85,6 +84,18 @@ class PresenceAnalyzerViewsTestCase(unittest.TestCase):
         self.assertEqual(resp.content_type, 'text/html')
 
         resp = self.client.get('/api/v1/presence_weekday/10')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.content_type, 'application/json')
+
+    def test_presence_start_end_view(self):
+        """
+        Test presence mean time start/end for given user grouped by weekday.
+        """
+        resp = self.client.get('/api/v1/presence_start_end/666')
+        self.assertEqual(resp.status_code, 404)
+        self.assertEqual(resp.content_type, 'text/html')
+
+        resp = self.client.get('/api/v1/presence_start_end/10')
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.content_type, 'application/json')
 
@@ -138,6 +149,26 @@ class PresenceAnalyzerUtilsTestCase(unittest.TestCase):
         self.assertIsInstance(grouped_by_weekday, list)
         with self.assertRaises(TypeError):
             utils.group_by_weekday({'first': 123, 'second': '123'})
+
+    def test_group_start_end(self):
+        """
+        Test grouping starts and ends by weekday.
+        """
+        data = utils.get_data()
+        grouped_by_weekday = utils.group_start_end(data[10])
+        self.assertIsInstance(grouped_by_weekday, list)
+        with self.assertRaises(TypeError):
+            utils.group_by_weekday({'first': 123, 'second': '123'})
+
+    def test_mean_start_stop(self):
+        """
+        Test counting starts and ends by weekday.
+        """
+        data = utils.get_data()
+        counted_by_weekday = utils.mean_start_stop(data[10])
+        self.assertIsInstance(counted_by_weekday, list)
+        with self.assertRaises(TypeError):
+            utils.mean_start_stop({'first': 123, 'second': '123'})
 
     def test_seconds_since_midnight(self):
         """
