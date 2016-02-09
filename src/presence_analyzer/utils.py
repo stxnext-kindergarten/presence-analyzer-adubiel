@@ -74,6 +74,22 @@ def get_data():
 def group_by_weekday(items):
     """
     Groups presence entries by weekday.
+
+    Args:
+        items (dict): data structure for user like:
+            {
+                datetime.date(2013, 10, 1): {
+                    'start': datetime.time(9, 0, 0),
+                    'end': datetime.time(17, 30, 0),
+                },
+                datetime.date(2013, 10, 2): {
+                    'start': datetime.time(8, 30, 0),
+                    'end': datetime.time(16, 45, 0),
+                },
+            }
+
+    Returns:
+        list: intervals (end - start) grouped by weekday.
     """
     result = [[], [], [], [], [], [], []]  # one list for every day in week
     for date in items:
@@ -86,16 +102,27 @@ def group_by_weekday(items):
 def group_start_end(items):
     """
     Groups presence start and end entries by weekday.
+
+    Args:
+        items (dict): data structure for user like:
+            {
+                datetime.date(2013, 10, 1): {
+                    'start': datetime.time(9, 0, 0),
+                    'end': datetime.time(17, 30, 0),
+                },
+                datetime.date(2013, 10, 2): {
+                    'start': datetime.time(8, 30, 0),
+                    'end': datetime.time(16, 45, 0),
+                },
+            }
+
+    Returns:
+        list: list of weekdays. Each weekday includes two sublists with
+            intervals:
+            [0] - seconds from midnight to start
+            [1] - seconds from midnight to end.
     """
-    result = [
-        [[], []],
-        [[], []],
-        [[], []],
-        [[], []],
-        [[], []],
-        [[], []],
-        [[], []]
-    ]  # one list for every day in week
+    result = [[[], []] for __ in range(7)]  # one list for every day in week
     for date in items:
         start = items[date]['start']
         end = items[date]['end']
@@ -107,6 +134,23 @@ def group_start_end(items):
 def mean_start_stop(items):
     """
     Counts mean start and end time by weekday.
+
+    Args:
+        items (dict): data structure for user like:
+            {
+                datetime.date(2013, 10, 1): {
+                    'start': datetime.time(9, 0, 0),
+                    'end': datetime.time(17, 30, 0),
+                },
+                datetime.date(2013, 10, 2): {
+                    'start': datetime.time(8, 30, 0),
+                    'end': datetime.time(16, 45, 0),
+                },
+            }
+
+    Returns:
+        list: list of weekdays. Each weekday includes dict with
+            mean time for 'Start' and 'End'.
     """
     items_grouped = group_start_end(items)
     result = []
@@ -123,6 +167,12 @@ def mean_start_stop(items):
 def seconds_since_midnight(time):
     """
     Calculates amount of seconds since midnight.
+
+    Args:
+        time(datetime.time): just time.
+
+    Returns:
+        int: calculated time in seconds.
     """
     return time.hour * 3600 + time.minute * 60 + time.second
 
@@ -130,6 +180,13 @@ def seconds_since_midnight(time):
 def interval(start, end):
     """
     Calculates inverval in seconds between two datetime.time objects.
+
+    Args:
+        start (datetime.time): time of starting work
+        end (datetime.time): time of ending work
+
+    Returns:
+        int: time in seconds between end and start.
     """
     return seconds_since_midnight(end) - seconds_since_midnight(start)
 
@@ -137,5 +194,11 @@ def interval(start, end):
 def mean(items):
     """
     Calculates arithmetic mean. Returns zero for empty lists.
+
+    Args:
+        items (list): list of times.
+
+    Returns:
+        float: arithmetic mean.
     """
     return float(sum(items)) / len(items) if len(items) > 0 else 0

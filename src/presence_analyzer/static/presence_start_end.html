@@ -103,19 +103,10 @@
                         loading.show();
                         chart_div.hide();
                         $.getJSON("/api/v1/presence_start_end/"+selected_user, function(result) {
-	                        // some dummy data, this should go from API
-	                        //var result = [
-	                        //    ["Mon", new Date(1, 1, 1, 7, 37, 38), new Date(1, 1, 1, 15, 07, 14)],
-	                        //    ["Tue", new Date(1, 1, 1, 8, 16, 23), new Date(1, 1, 1, 14, 01, 47)],
-	                        //    ["Wed", new Date(1, 1, 1, 7, 00, 06), new Date(1, 1, 1, 13, 24, 12)],
-	                        //    ["Thu", new Date(1, 1, 1, 7, 26, 32), new Date(1, 1, 1, 12, 40, 45)],
-	                        //    ["Fri", new Date(1, 1, 1, 6, 53, 22), new Date(1, 1, 1, 12, 52, 09)]
-	                        //]
 	                        $.each(result, function(index, value) {
                             	value[1] = parseInterval(value[1]);
                             	value[2] = parseInterval(value[2]);
                             });
-                            console.log(result);
 
 	                        var data = new google.visualization.DataTable();
 	                        data.addColumn('string', 'Weekday');
