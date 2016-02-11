@@ -137,6 +137,36 @@ class PresenceAnalyzerViewsTestCase(unittest.TestCase):
         self.assertEqual(type(data[0][1]), int)
         self.assertEqual(type(data[0][2]), int)
 
+    def test_render_all_view_mainpage(self):
+        """
+        Test correctness of rendering view from templates.
+        Redirect to default template.
+        """
+        resp = self.client.get('/')
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(resp.content_type, 'text/html; charset=utf-8')
+        self.assertIn('Redirecting', resp.data)
+
+    def test_render_all_view_template(self):
+        """
+        Test correctness of rendering view from templates.
+        Check the template name.
+        """
+        resp = self.client.get('/presence_start_end.html')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.content_type, 'text/html; charset=utf-8')
+        self.assertIn('Presence start-end weekday', resp.data)
+
+    def test_render_all_view_template_not_exists(self):
+        """
+        Test correctness of rendering view from templates.
+        Check if render notFound.html.
+        """
+        resp = self.client.get('/template_that_not_exists')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.content_type, 'text/html; charset=utf-8')
+        self.assertIn('ERROR 404', resp.data)
+
 
 class PresenceAnalyzerUtilsTestCase(unittest.TestCase):
     """
