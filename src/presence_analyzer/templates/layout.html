@@ -30,11 +30,9 @@
             %}
             <ul>
             	{% for menu_url, menu_title in navigation %}
-            		<li
-            			{% if selected == menu_url: %}
-            				id='selected'
-        				{% endif %}
-            		><a href="{{ menu_url }}">{{ menu_title }}</a></li>
+            		<li {% if selected == menu_url: %} id='selected' {% endif %} >
+            			<a href="{{ menu_url }}">{{ menu_title }}</a>
+            		</li>
             	{% endfor %}
             </ul>
         </div>
