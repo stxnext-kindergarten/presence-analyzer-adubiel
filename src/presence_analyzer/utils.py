@@ -4,12 +4,14 @@ Helper functions used in views.
 """
 
 import csv
+
 from json import dumps
 from functools import wraps
 from datetime import datetime
 
 import logging
 
+from lxml import etree
 from flask import Response
 from presence_analyzer.main import app
 
@@ -67,6 +69,40 @@ def get_data():
                 log.debug('Problem with line %d: ', i, exc_info=True)
 
             data.setdefault(user_id, {})[date] = {'start': start, 'end': end}
+
+    return data
+
+
+def get_xml_data():
+    """
+    Extracts data about users from XML.
+
+    It creates structure like this:
+    data = {
+        'user_id': {
+            'avatar': 'https://intranet.stxnext.pl/api/images/users/141',
+            'name': 'Adam P.',
+        },
+        'user_id': {
+            'avatar': 'https://intranet.stxnext.pl/api/images/users/176',
+            'name': 'Adrian K.',
+        },
+    }
+    """
+    data = {}
+    with open(app.config['DATA_XML'], 'r') as xmlfile:
+        xmldata_tree_object = etree.parse(xmlfile)
+        data_xml = xmldata_tree_object.getroot()
+
+        server_data = {server.tag: server.text for server in data_xml[0]}
+        base_path = server_data['protocol'] + '://' + server_data['host']
+
+        for user in data_xml[1]:
+            user_data = {user_info.tag: user_info.text for user_info in user}
+            data[user.attrib['id']] = {
+                'avatar': base_path + user_data['avatar'],
+                'name': user_data['name'],
+            }
 
     return data
 

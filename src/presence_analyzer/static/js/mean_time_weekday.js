@@ -10,6 +10,7 @@ google.load("visualization", "1", {packages:["corechart"], 'language': 'pl'});
             });
             dropdown.show();
             loading.hide();
+            hideAvatar();
         });
         $('#user_id').change(function(){
             var selected_user = $("#user_id").val();
@@ -17,6 +18,7 @@ google.load("visualization", "1", {packages:["corechart"], 'language': 'pl'});
             if(selected_user) {
                 loading.show();
                 chart_div.hide();
+                hideAvatar();
                 $.getJSON("/api/v1/mean_time_weekday/"+selected_user, function(result) {
                     $.each(result, function(index, value) {
                         value[1] = parseInterval(value[1]);
@@ -30,13 +32,13 @@ google.load("visualization", "1", {packages:["corechart"], 'language': 'pl'});
                     };
                     var formatter = new google.visualization.DateFormat({pattern: 'HH:mm:ss'});
                     formatter.format(data, 1);
-
                     
                     chart_div.show();
                     loading.hide();
                     var chart = new google.visualization.ColumnChart(chart_div[0]);
                     chart.draw(data, options);
                 });
+                updateAvatar(selected_user);
             }
         });
     });

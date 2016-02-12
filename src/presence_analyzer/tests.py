@@ -26,6 +26,11 @@ TEST_BROKEN_DATA2_CSV = os.path.join(
     'test_broken_data2.csv'
 )
 
+TEST_DATA_XML = os.path.join(
+    os.path.dirname(__file__), '..', '..', 'runtime', 'data',
+    'test_users.xml'
+)
+
 
 # pylint: disable=maybe-no-member, too-many-public-methods, undefined-variable
 # pylint: disable=invalid-name
@@ -39,6 +44,7 @@ class PresenceAnalyzerViewsTestCase(unittest.TestCase):
         Before each test, set up a environment.
         """
         main.app.config.update({'DATA_CSV': TEST_DATA_CSV})
+        main.app.config.update({'DATA_XML': TEST_DATA_XML})
         self.client = main.app.test_client()
 
     def tearDown(self):
@@ -64,7 +70,10 @@ class PresenceAnalyzerViewsTestCase(unittest.TestCase):
         self.assertEqual(resp.content_type, 'application/json')
         data = json.loads(resp.data)
         self.assertEqual(len(data), 2)
-        self.assertDictEqual(data[0], {u'user_id': 10, u'name': u'User 10'})
+        self.assertDictEqual(data[0], {
+            u'user_id': '11',
+            u'name': u'Maciej D.',
+        })
 
     def test_mean_time_weekday_view_negative(self):
         """
@@ -178,6 +187,7 @@ class PresenceAnalyzerUtilsTestCase(unittest.TestCase):
         Before each test, set up a environment.
         """
         main.app.config.update({'DATA_CSV': TEST_DATA_CSV})
+        main.app.config.update({'DATA_XML': TEST_DATA_XML})
 
     def tearDown(self):
         """
@@ -198,6 +208,19 @@ class PresenceAnalyzerUtilsTestCase(unittest.TestCase):
         self.assertEqual(
             data[10][sample_date]['start'],
             datetime.time(9, 39, 5)
+        )
+
+    def test_get_xml_data(self):
+        """
+        Test parsing of XML file.
+        """
+        data = utils.get_xml_data()
+        self.assertIsInstance(data, dict)
+        self.assertItemsEqual(data.keys(), ['10', '11'])
+        self.assertEqual('Maciej Z.', data['10']['name'])
+        self.assertEqual(
+            'https://intranet.stxnext.pl/api/images/users/10',
+            data['10']['avatar'],
         )
 
     def test_get_data_broken_datasource(self):

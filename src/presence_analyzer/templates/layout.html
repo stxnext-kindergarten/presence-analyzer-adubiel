@@ -13,6 +13,7 @@
     {% block css %}{% endblock %}
 
     <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/update_avatar.js') }}"></script>
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     {% block js %}{% endblock %}
 </head>
@@ -42,6 +43,9 @@
                 <select id="user_id" style="display: none">
                     <option value="">--</option>
                 </select>
+                <div id="user_avatar">
+                    <img src="" />
+                </div>
                 <div id="chart_div" style="display: none">
                 </div>
                 <div id="loading">
