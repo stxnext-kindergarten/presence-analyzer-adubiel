@@ -10,6 +10,7 @@ google.load("visualization", "1", {packages:["corechart", "timeline"], 'language
             });
             dropdown.show();
             loading.hide();
+            hideAvatar();
         });
         $('#user_id').change(function(){
             var selected_user = $("#user_id").val();
@@ -17,6 +18,7 @@ google.load("visualization", "1", {packages:["corechart", "timeline"], 'language
             if(selected_user) {
                 loading.show();
                 chart_div.hide();
+                hideAvatar();
                 $.getJSON("/api/v1/presence_start_end/"+selected_user, function(result) {
                     $.each(result, function(index, value) {
                     	value[1] = parseInterval(value[1]);
@@ -40,6 +42,7 @@ google.load("visualization", "1", {packages:["corechart", "timeline"], 'language
                     var chart = new google.visualization.Timeline(chart_div[0]);
                     chart.draw(data, options);
                 });
+                updateAvatar(selected_user);
             }
         });
     });

@@ -28,9 +28,10 @@ def users_view():
     """
     Users listing for dropdown.
     """
-    data = utils.get_data()
+    data = utils.get_xml_data()
+
     return [
-        {'user_id': i, 'name': 'User {0}'.format(str(i))}
+        {'user_id': i, 'name': data[i]['name']}
         for i in data.keys()
     ]
 
@@ -104,3 +105,14 @@ def render_all(temp_name):
         return render_template(temp_name, selected=temp_name)
     except TemplateNotFound:
         return render_template('notFound.html')
+
+
+@app.route('/api/v1/user_avatar/<int:user_id>', methods=['GET'])
+@utils.jsonify
+def user_avatar(user_id):
+    """
+    Return path to users avatar.
+    """
+    data = utils.get_xml_data()
+    user_id = str(user_id)
+    return data[user_id]['avatar']
