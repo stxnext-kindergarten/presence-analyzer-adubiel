@@ -94,14 +94,13 @@ def get_xml_data():
         xmldata_tree_object = etree.parse(xmlfile)
         data_xml = xmldata_tree_object.getroot()
 
-        server_data = {server.tag: server.text for server in data_xml[0]}
-        base_path = server_data['protocol'] + '://' + server_data['host']
-
-        for user in data_xml[1]:
-            user_data = {user_info.tag: user_info.text for user_info in user}
-            data[user.attrib['id']] = {
-                'avatar': base_path + user_data['avatar'],
-                'name': user_data['name'],
+        server_data = data_xml.find('server')
+        base_path = '{0}://{1}'.format(
+            server_data.find('protocol').text, server_data.find('host').text)
+        for user in data_xml.find('users'):
+            data[user.get('id')] = {
+                'avatar': '{0}{1}'.format(base_path, user.find('avatar').text),
+                'name': user.find('name').text,
             }
 
     return data

@@ -2,11 +2,12 @@
 """
 Presence analyzer unit tests.
 """
+from __future__ import unicode_literals
+
 import os.path
 import json
 import datetime
 import unittest
-
 
 from presence_analyzer import main, utils, views
 
@@ -71,8 +72,8 @@ class PresenceAnalyzerViewsTestCase(unittest.TestCase):
         data = json.loads(resp.data)
         self.assertEqual(len(data), 2)
         self.assertDictEqual(data[0], {
-            u'user_id': '11',
-            u'name': u'Maciej D.',
+            'user_id': '11',
+            'name': 'Maciej D.',
         })
 
     def test_mean_time_weekday_view_negative(self):
